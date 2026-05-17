@@ -2,8 +2,11 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { OCRResult, Variation } from "../types";
 
 const getAI = () => {
-  const apiKey = "AIzaSyBl6zDmzUV2TKBiwBF5j-yFD-hFJvYRnWw"; 
-  return new GoogleGenAI({ apiKey: apiKey });
+  const apiKey = "AIzaSyBl6zDmUV2TKBiwBF5j-yFD-hFjVyRNwW"; 
+  return new GoogleGenAI({ 
+    apiKey: apiKey,
+    baseUrl: "https://gateway.ai.cloudflare.com/v1/51761eb895781a57cb8c5115ba92f6d2/gemini-proxy/generativelanguage"
+  });
 };
 
 export const aiService = {
