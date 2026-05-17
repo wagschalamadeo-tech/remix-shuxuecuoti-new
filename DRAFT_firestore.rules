@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Phase 3: Primitive Definitions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Phase 4: Entity Validation
+    function isValidVariation(v) {
+      return v.question is string && v.question.size() <= 5000 &&
+             v.answer is string && v.answer.size() <= 5000 &&
+             v.steps is list && v.steps.size() <= 20 &&
+             v.explanation is string && v.explanation.size() <= 5000 &&
+             v.difficulty is string && v.difficulty.size() <= 20;
+    }
+
+    function isValidWrongQuestion(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.originalQuestion is string && data.originalQuestion.size() <= 5000 &&
+             data.knowledgePoint is string && data.knowledgePoint.size() <= 200 &&
+             data.createdAt is string && data.createdAt.size() <= 100 &&
+             // Optional fields if present
+             (!('imageUrl' in data) || (data.imageUrl is string && data.imageUrl.size() <= 1048576)) &&
+             (!('options' in data) || (data.options is list && data.options.size() <= 10)) &&
+             (!('userAnswer' in data) || (data.userAnswer is string && data.userAnswer.size() <= 2000)) &&
+             (!('correctAnswer' in data) || (data.correctAnswer is string && data.correctAnswer.size() <= 2000)) &&
+             (!('variations' in data) || (data.variations is list && data.variations.size() <= 5)) &&
+             // Strict structure for Variations
+             (!('variations' in data) || (data.variations.size() == 0 || isValidVariation(data.variations[0])));
+    }
+
+    match /wrongQuestions/{questionId} {
+      // Identity Protection
+      allow get: if isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      allow create: if isSignedIn() && 
+                      isValidWrongQuestion(incoming()) &&
+                      // Ensure required keys are present
+                      incoming().keys().hasAll(['userId', 'originalQuestion', 'knowledgePoint', 'createdAt', 'variations']);
+
+      allow update: if isSignedIn() &&
+                      isValidWrongQuestion(incoming()) &&
+                      existing().userId == request.auth.uid &&
+                      incoming().userId == existing().userId &&
+                      incoming().createdAt == existing().createdAt &&
+                      (
+                        // Action: Update variations or details
+                        incoming().diff(existing()).affectedKeys().hasOnly([
+                          'originalQuestion', 'imageUrl', 'options', 'userAnswer', 
+                          'correctAnswer', 'knowledgePoint', 'variations'
+                        ])
+                      );
+
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+  }
+}
