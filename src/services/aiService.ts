@@ -2,7 +2,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { OCRResult, Variation } from "../types";
 
 const getAI = () => {
-  const apiKey = "AIzaSyBl6zDmUV2TKBiwBF5j-yFD-hFjVyRNwW"; 
+  const apiKey = "AIzaSyBl6zDmzUV2TKBiwBF5j-yFD-hFJvYRnWw"; 
   return new GoogleGenAI({ apiKey: apiKey });
 };
 
