@@ -2,8 +2,8 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { OCRResult, Variation } from "../types";
 
 const getAI = () => {
-  const apiKey = process.env.GEMINI_API_KEY;
-  return new GoogleGenAI({ apiKey: apiKey || '' });
+  const apiKey = "AIzaSyBl6zDmUV2TKBiwBF5j-yFD-hFjVyRNwW"; 
+  return new GoogleGenAI({ apiKey: apiKey });
 };
 
 export const aiService = {
