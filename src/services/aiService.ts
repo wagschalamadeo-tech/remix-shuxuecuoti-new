@@ -2,9 +2,11 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { OCRResult, Variation } from "../types";
 
 const getAI = () => {
-  const apiKey = "AIzaSyBl6zDmUV2TKBiwBF5j-yFD-hFjVyRNwW"; 
-  return new GoogleGenAI({ 
-    apiKey: apiKey,
+  // 💡 Vite 前端项目在浏览器里读取环境变量，必须使用 import.meta.env
+  // 并且变量名必须以 VITE_ 开头，否则会被 Vite 自动过滤掉！
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  return new GoogleGenAI({ apiKey: apiKey || '' });
+};
     baseUrl: "https://gateway.ai.cloudflare.com/v1/51761eb895781a57cb8c5115ba92f6d2/gemini-proxy/generativelanguage"
   });
 };
