@@ -2,6 +2,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { OCRResult, Variation } from "../types";
 
 const getAI = () => {
+  // 🔐 这样写，网页只会去 Vercel 后台秘密读取 Key，绝不会暴露在 GitHub 上！
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   return new GoogleGenAI({ apiKey: apiKey || '' });
 };
