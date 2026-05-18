@@ -5,6 +5,7 @@ const getAI = () => {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   return new GoogleGenAI({ apiKey: apiKey || '' });
 };
+
 export const aiService = {
   async recognizeQuestion(base64Image: string, mimeType: string): Promise<OCRResult> {
     try {
