@@ -2,10 +2,9 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { OCRResult, Variation } from "../types";
 
 const getAI = () => {
-  const apiKey = "AIzaSyBl6zDmUV2TKBiwBF5j-yFD-hFjVyRNwW"; // 👈 记得确保这串Key是你今天最新生成的、能用的那串
-  return new GoogleGenAI({ apiKey: apiKey });
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  return new GoogleGenAI({ apiKey: apiKey || '' });
 };
-
 export const aiService = {
   async recognizeQuestion(base64Image: string, mimeType: string): Promise<OCRResult> {
     try {
